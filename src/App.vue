@@ -1,7 +1,9 @@
 <template>
     <div>
         <app-header></app-header>
-        <router-view></router-view>
+        <transition name="fade" mode="out-in">
+            <router-view></router-view>
+        </transition>
         <app-footer></app-footer>
     </div>
 </template>
@@ -15,10 +17,32 @@ export default {
     components: {
         appHeader: Header,
         appFooter: Footer
+    },
+    created() {// component yaratıldıgı andaki lifescyle metodu..
+        this.$store.dispatch("getTradeResult");
     }
 }
 
 </script>
 
 <style>
+body {
+    background-color: #a7a0bb5c;
+}
+
+/* fade özel classlar */
+.fade-enter {
+    opacity: 0;
+}
+
+.fade-enter-active {
+    transition: opacity .3s ease-out;
+}
+
+.fade-leave {}
+
+.fade-leave-active {
+    transition: opacity .3s ease-out;
+    opacity: 0;
+}
 </style>
