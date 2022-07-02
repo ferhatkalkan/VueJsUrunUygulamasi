@@ -7,44 +7,72 @@
                     <hr>
                     <div class="form-group">
                         <label>Ürün Adı</label>
-                        <select class="form-control">
-                            <option value="1">Ürün 1</option>
-                            <option value="1">Ürün 2</option>
-                            <option value="1">Ürün 3</option>
-                            <option value="1">Ürün 4</option>
-                            <option value="1">Ürün 5</option>
+                        <select class="form-control" v-model="selectedProduct" @change="productSelected">
+                            <option selected disabled>Seçiniz</option>
+                            <option :disabled="product.count == 0" :value="product.key" v-for="product in getProducts">
+                                {{
+                                        product.title
+                                }}</option>
                         </select>
                     </div>
-                    <div class="card mb-2 border border-danger">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <div class="mb-3">
-                                        <span class="badge badge-info">Stok : 4</span>
-                                        <span class="badge badge-primary">Fiyat : 100,5 TL</span>
+
+                    <transition name="fade" mode="out-in">
+                        <div class="card mb-2 border border-danger" v-if="product != null">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 text-center">
+                                        <div class="mb-3">
+                                            <span class="badge badge-info">Stok : {{ product.count }}</span>
+                                            <span class="badge badge-primary">Fiyat : {{ product.price | currency
+                                            }}</span>
+                                        </div>
+                                        <p class="border border-warning p-2 text-secondary"> {{ product.description }}
+                                        </p>
                                     </div>
-                                    <p class="border border-warning p-2 text-secondary">Lorem ipsum dolor sit amet,
-                                        consectetur
-                                        adipisicing elit. Assumenda debitis deleniti eos impedit iste numquam quos sit.
-                                        Dignissimos, mollitia nemo officia reiciendis repellendus rerum velit. Eos
-                                        libero magnam
-                                        quas tempore!</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </transition>
+
                     <div class="form-group">
                         <label>Adet</label>
-                        <input type="text" class="form-control" placeholder="Ürün adetini giriniz..">
+                        <input type="text" v-model="product_count" class="form-control"
+                            placeholder="Ürün adetini giriniz..">
                     </div>
                     <hr>
-                    <button class="btn btn-primary">Kaydet</button>
+                    <button @click="save" class="btn btn-primary">Kaydet</button>
                 </div>
             </div>
         </div>
     </div>
 </template>
-<script></script>
+<script>
+import { mapGetters } from 'vuex'
+export default {
+    data() {
+        return {
+            selectedProduct: null,
+            product: null,
+            product_count: null
+        }
+    },
+    computed: {
+        ...mapGetters(["getProducts"])
+    },
+    methods: {
+        productSelected() {
+            this.product = this.$store.getters.getProduct(this.selectedProduct)[0]; //array döndüğü için 0.indexdeki kaydı almasını sağladık. Zaten 1 adet kayıt geliyor dizi olarak.
+        },
+        save() {
+            let product = {
+                key: this.selectedProduct,
+                count: this.product_count,
+            }
+            this.$store.dispatch("sellProduct", product) //actions'lara gidiyor. Dış dünyaya erişim için. Asenkron çalışması gerek. O yüzden actions.
+        }
+    }
+}
+</script>
 <style>
 .border-danger {
     border-style: dashed !important;

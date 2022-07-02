@@ -20,6 +20,7 @@ export default {
     },
     created() {// component yaratıldıgı andaki lifescyle metodu..
         this.$store.dispatch("getTradeResult");
+        this.$store.dispatch("initApp");
     }
 }
 
